@@ -62,7 +62,7 @@ export default function Sidebar() {
                             className={
                                 cn(`${menuClassName}`, activeMenu === 3 && "bg-gray-hover")
                             }
-                            onClick={() => { handleNavigate("/") }}
+                            onClick={() => { handleNavigate("/dashboard") }}
                         >
                             <DashboardIcon width={35} height={45} color="#a3a5b6" />
                         </button>
