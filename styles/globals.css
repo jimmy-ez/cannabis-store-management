@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        --color-cannabis: #0fab79;
+        --color-gray-hover: #3d3e42;
+        --color-menu: #a3a5b6;
+    }
+}
+
+html {
+    background: linear-gradient(to bottom, #252528, #232227);
+}
