@@ -6,9 +6,9 @@ import { fetchDataFromFirestore, addDataToFirestore, getAvailableProducts } from
 
 import { useEffect, useState } from "react";
 import CannabisTable from "../shop/component/CannabisTable";
-import { useDisclosure } from "@nextui-org/modal";
+import { useDisclosure } from "@heroui/react";
 import CannabisModal from "../shop/component/CannabisModal";
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/react";
 
 export default function StockPage() {
     const [products, setProducts] = useState<IProduct[]>([]);

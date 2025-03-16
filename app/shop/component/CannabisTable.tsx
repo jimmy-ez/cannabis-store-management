@@ -7,7 +7,7 @@ import {
     TableColumn,
     TableRow,
     TableCell
-} from "@nextui-org/table";
+} from "@heroui/react";
 
 interface CannabisTableProps {
     products: IProduct[];
