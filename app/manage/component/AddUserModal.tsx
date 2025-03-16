@@ -1,7 +1,7 @@
 "use client";
 
-import { ModalProps } from "@/interface/general.interface";
-import { addDataToFirestore, updateDataToFirestore } from "@/service/firestoreService";
+import { IShop, ModalProps } from "@/interface/general.interface";
+import { addDataToFirestore, fetchDataFromFirestore, updateDataToFirestore } from "@/service/firestoreService";
 import { Button } from "@heroui/react"
 import { Input } from "@heroui/react"
 import { IUser } from "@/interface/general.interface";
@@ -12,7 +12,7 @@ import {
     ModalBody,
     ModalFooter
 } from "@heroui/react"
-import { Select, SelectSection, SelectItem } from"@heroui/react"
+import { Select, SelectSection, SelectItem } from "@heroui/react"
 import { Switch } from "@heroui/react"
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
@@ -42,16 +42,70 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
 
     const [name, setName] = useState<string>();
     const [email, setEmail] = useState<string>();
-    const [role, setRole] = useState<string>();
+    const [role, setRole] = useState<string>("staff");
     const [shopId, setShopId] = useState<string[]>();
     const [isActive, setIsActive] = useState<boolean>(true);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isEdit, setIsEdit] = useState<boolean>(false);
 
-    const handleClose = () => { };
+    const [shops, setShops] = useState<IShop[]>([]);
 
-    const handleSubmit = () => { };
+    const fetchShopList = async () => {
+        const fetchedShop = await fetchDataFromFirestore("shops");
+        if (fetchedShop) {
+            setShops(fetchedShop);
+        }
+    };
+
+    useEffect(() => {
+        fetchShopList();
+    }, []);
+
+    const handleClose = () => {
+        onClose();
+        setName("");
+        setEmail("");
+        setRole("staff");
+        setShopId([]);
+        setIsActive(true);
+        setIsEdit(false);
+    };
+
+    const handleSubmit = async () => {
+        setIsLoading(true);
+        try {
+            if (!name || !email || !role || !shopId) {
+                toast.error("Please fill all fields");
+                return;
+            }
+
+            const data: IUser = {
+                name,
+                email,
+                role,
+                shopId,
+                isActive,
+            };
+
+            if (isEdit) {
+                // Update data
+            } else {
+                console.log("data", data);
+                delete data.id;
+                const resId = await addDataToFirestore("users", data);
+                if (resId) {
+                    toast.success("Shop user successfully");
+                    handleClose();
+                } else {
+                    toast.error("Failed to add user");
+                }
+            }
+
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <Modal size="xl" isOpen={isOpen} onOpenChange={onClose}>
@@ -102,16 +156,20 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
                                             selectionMode="multiple"
                                             disallowEmptySelection={true}
                                             className=""
-                                            aria-label="Favorite Animal"
-                                            placeholder="Select an animal"
+                                            aria-label="Select Shop"
+                                            placeholder="Select Shop"
                                             // selectedKeys={shopId}
                                             onChange={(e) => {
                                                 console.log(e.target.value);
-
+                                                const splitValue = e.target.value.split(",");
+                                                console.log("splitValue", splitValue);
+                                                if (splitValue.length > 1) {
+                                                    setShopId(splitValue);
+                                                }
                                             }}
                                         >
-                                            {shopList.map((shop) => (
-                                                <SelectItem key={shop.value}>{shop.label}</SelectItem>
+                                            {shops.map((shop) => (
+                                                <SelectItem key={shop.id}>{shop.name}</SelectItem>
                                             ))}
                                         </Select>
                                     </div>

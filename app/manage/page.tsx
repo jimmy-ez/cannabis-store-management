@@ -7,14 +7,20 @@ import AddShopModal from "./component/AddShopModal";
 import { fetchDataFromFirestore } from "@/service/firestoreService";
 import { useEffect, useState } from "react";
 import ShopTable from "./component/ShopTable";
-import { IShop } from "@/interface/general.interface";
+import { IShop, IUser } from "@/interface/general.interface";
+import UserTable from "./component/UserTable";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function ManagePage() {
+    const { data: session } = useSession();
+    const router = useRouter();
 
     const { isOpen: isOpenAddUser, onClose: onCloseAddUser, onOpen: onOpenAddUser } = useDisclosure();
     const { isOpen: isOpenAddShop, onClose: onCloseAddShop, onOpen: onOpenAddShop } = useDisclosure();
 
     const [shops, setShops] = useState<IShop[]>([]);
+    const [users, setUsers] = useState<IUser[]>([]);
 
     const fetchShopData = async () => {
         const fetchedShop = await fetchDataFromFirestore("shops");
@@ -23,12 +29,31 @@ export default function ManagePage() {
         }
     };
 
+    const fetchUser = async () => {
+        const fetchedUser = await fetchDataFromFirestore("users");
+        if (fetchedUser) {
+            setUsers(fetchedUser);
+        }
+    };
+
     useEffect(() => {
         fetchShopData();
+        fetchUser();
     }, []);
+
+    useEffect(() => {
+        console.log("session", session);
+        if (session && session.user.role !== "manager") {
+            router.push("/");
+        }
+    }, [session]);
 
     const handleSelectShop = async (shop: IShop) => {
         console.log("shop", shop);
+    };
+
+    const handleSelectUser = async (user: any) => {
+        console.log("user", user);
     };
 
     return (
@@ -59,10 +84,14 @@ export default function ManagePage() {
                 </div>
             </div>
 
-            <div className="w-full mt-4">
+            <div className="w-full mt-4 flex flex-row gap-4">
                 <div className="w-1/2">
                     <p className="ml-2 font-bold mb-2 text-cannabis">SHOP LIST</p>
                     <ShopTable shops={shops} handleSelectShop={handleSelectShop} />
+                </div>
+                <div className="w-1/2">
+                    <p className="ml-2 font-bold mb-2 text-cannabis">USER LIST</p>
+                    <UserTable users={users} shops={shops} handleSelectUser={handleSelectUser} />
                 </div>
             </div>
         </div>

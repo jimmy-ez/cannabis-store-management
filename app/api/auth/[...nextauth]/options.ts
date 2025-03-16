@@ -1,3 +1,5 @@
+import { IUser } from "@/interface/general.interface";
+import { getUserByEmail } from "@/service/firestoreService";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -15,6 +17,15 @@ export const options: NextAuthOptions = {
       if (token.sub) {
         session.user.id = token.sub;
       }
+      if (token.email) {
+        const user = await getUserByEmail(token.email) as IUser;
+        if(user) {
+          if(user.role) {
+            session.user.role = user.role;
+          }
+        }
+      }
+
       return session;
     },
   },

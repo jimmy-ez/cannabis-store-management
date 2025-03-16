@@ -76,3 +76,14 @@ export const getAvailableProducts = async () => {
     ...doc.data(),
   })) as IProduct[];
 };
+
+export const getUserByEmail = async (email: string) => {
+  const dataCollection = collection(db, "users");
+  const q = query(dataCollection, where("email", "==", email));
+
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }))[0];
+};

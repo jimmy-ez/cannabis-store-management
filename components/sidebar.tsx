@@ -4,10 +4,13 @@ import { BoxIcon, CannabisLogo, DashboardIcon, LogOutIcon, ManageIcon, OrderIcon
 import { useEffect, useState } from "react";
 import { cn } from "@/utils/twHelper";
 import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 export default function Sidebar() {
     const router = useRouter();
     const pathName = usePathname();
+
+    const { data: session } = useSession();
 
     const [activeMenu, setActiveMenu] = useState<number>(0);
 
@@ -44,7 +47,7 @@ export default function Sidebar() {
                         >
                             <CannabisLogo width={45} height={45} />
                         </div> */}
-                        <img src="/Image/logo.jpg" alt="logo" className="w-20 h-20 rounded-md" />
+                        <img src="/Image/broccolilab_logo.jpg" alt="logo" className="w-20 h-20 rounded-md" />
                     </button>
                     <div className="border-b border-gray-400 mt-6"></div>
                     <div className="flex flex-col py-6 gap-4 justify-between h-full">
@@ -82,7 +85,7 @@ export default function Sidebar() {
                                     <p className="text-xs font-bold">STOCK</p>
                                 </div>
                             </button>
-                            <button
+                            {session?.user.role === "manager" && <button
                                 className={
                                     cn(`${menuClassName}`, activeMenu === 4 && "bg-gray-hover")
                                 }
@@ -92,7 +95,7 @@ export default function Sidebar() {
                                     <ManageIcon width={35} height={45} color="#a3a5b6" />
                                     <p className="text-xs font-bold">MANAGE</p>
                                 </div>
-                            </button>
+                            </button>}
                             {/* <button
                                 className={
                                     cn(`${menuClassName}`, activeMenu === 4 && "bg-gray-hover")
