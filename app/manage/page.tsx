@@ -2,7 +2,7 @@
 
 import { AddIcon } from "@/components/icons";
 import AddUserModal from "./component/AddUserModal";
-import { useDisclosure } from "@nextui-org/modal";
+import { useDisclosure } from "@heroui/react";
 import AddShopModal from "./component/AddShopModal";
 import { fetchDataFromFirestore } from "@/service/firestoreService";
 import { useEffect, useState } from "react";

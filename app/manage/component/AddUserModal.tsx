@@ -2,8 +2,8 @@
 
 import { ModalProps } from "@/interface/general.interface";
 import { addDataToFirestore, updateDataToFirestore } from "@/service/firestoreService";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { Button } from "@heroui/react"
+import { Input } from "@heroui/react"
 import { IUser } from "@/interface/general.interface";
 import {
     Modal,
@@ -11,14 +11,14 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter
-} from "@nextui-org/modal";
-import { Select, SelectSection, SelectItem } from "@nextui-org/select";
-import { Switch } from "@nextui-org/switch";
+} from "@heroui/react"
+import { Select, SelectSection, SelectItem } from"@heroui/react"
+import { Switch } from "@heroui/react"
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
 import { SearchIcon } from "@/components/icons";
-import { SharedSelection } from "@nextui-org/system";
+import { SharedSelection } from "@heroui/react"
 
 const label = `text-sm font-semibold pb-2 pl-1`;
 

@@ -6,7 +6,7 @@ import { fetchDataFromFirestore, addDataToFirestore } from "@/service/firestoreS
 
 import { useEffect, useState } from "react";
 import CannabisTable from "./component/CannabisTable";
-import { useDisclosure } from "@nextui-org/modal";
+import { useDisclosure } from "@heroui/react"
 import AddCannabisModal from "./component/AddCannabisModal";
 
 export default function StockPage() {

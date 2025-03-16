@@ -4,7 +4,7 @@ import { ModalProps } from "@/interface/general.interface";
 import { IProduct } from "@/interface/product.interface";
 import { addDataToFirestore, updateDataToFirestore } from "@/service/firestoreService";
 import { cn } from "@/utils/twHelper";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/react"
 import { useRouter } from "next/navigation";
 import {
     Modal,
@@ -12,7 +12,7 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter
-} from "@nextui-org/modal";
+} from "@heroui/react"
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
 

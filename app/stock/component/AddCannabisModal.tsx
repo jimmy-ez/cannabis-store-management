@@ -3,17 +3,17 @@
 import { IShop, ModalProps } from "@/interface/general.interface";
 import { IProduct } from "@/interface/product.interface";
 import { addDataToFirestore, fetchDataFromFirestore, updateDataToFirestore } from "@/service/firestoreService";
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { Button } from "@heroui/react";
+import { Input } from "@heroui/react"
 import {
     Modal,
     ModalContent,
     ModalHeader,
     ModalBody,
     ModalFooter
-} from "@nextui-org/modal";
-import { Select, SelectSection, SelectItem } from "@nextui-org/select";
-import { Switch } from "@nextui-org/switch";
+} from "@heroui/react"
+import { Select, SelectSection, SelectItem } from "@heroui/react"
+import { Switch } from "@heroui/react"
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
@@ -215,9 +215,9 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
                                             aria-label="Select Strain Type"
                                         >
                                             <SelectSection title="Select Type">
-                                                <SelectItem value="indica" key={"indica"}>Indica</SelectItem>
-                                                <SelectItem value="sativa" key={"sativa"}>Sativa</SelectItem>
-                                                <SelectItem value="hybrid" key={"hybrid"}>Hybrid</SelectItem>
+                                                <SelectItem key="indica">Indica</SelectItem>
+                                                <SelectItem key="sativa">Sativa</SelectItem>
+                                                <SelectItem key="hybrid">Hybrid</SelectItem>
                                             </SelectSection>
                                         </Select>
                                     </div>
