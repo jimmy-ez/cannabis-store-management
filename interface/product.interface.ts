@@ -8,6 +8,7 @@ export interface ICannabis {
 
 export interface IProduct {
   id?: string;
+  shopId: string;
   name: string;
   detail: string;
   cost: number;

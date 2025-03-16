@@ -1,8 +1,8 @@
 "use client";
 
-import { ModalProps } from "@/interface/general.interface";
+import { IShop, ModalProps } from "@/interface/general.interface";
 import { IProduct } from "@/interface/product.interface";
-import { addDataToFirestore, updateDataToFirestore } from "@/service/firestoreService";
+import { addDataToFirestore, fetchDataFromFirestore, updateDataToFirestore } from "@/service/firestoreService";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import {
@@ -39,11 +39,24 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
     const [stock, setStock] = useState<number>();
     const [cost, setCost] = useState<number>();
     const [isActive, setIsActive] = useState<boolean>(true);
+    const [shopId, setShopId] = useState<string>();
 
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [productId, setProductId] = useState<string>();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [shopList, setShopList] = useState<IShop[]>([]);
+
+    const fetchedShop = async () => {
+        const fetchedShop = await fetchDataFromFirestore("shops");
+        if (fetchedShop) {
+            setShopList(fetchedShop);
+        }
+    }
+
+    useEffect(() => {
+        fetchedShop();
+    }, []);
 
     useEffect(() => {
         if (selectedProduct) {
@@ -66,12 +79,13 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
     const handleSubmit = async () => {
         setIsLoading(true);
         try {
-            if (!strainName || !cnbType || !feeling || !taste || !price || !localPrice || !stock || !cost) {
+            if (!strainName || !cnbType || !feeling || !taste || !price || !localPrice || !stock || !cost || !shopId) {
                 return toast.error("Please fill all required fields");
             }
 
             const productData: IProduct = {
                 name: strainName,
+                shopId: shopId,
                 detail: "",
                 cost: cost,
                 price: price,
@@ -154,6 +168,27 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
                         <ModalBody className="max-h-[70vh] overflow-y-scroll">
                             <form>
                                 <div className="flex flex-col gap-4">
+
+                                    <div>
+                                        <p className={label}>SHOP LIST</p>
+                                        <Select
+                                            // selectionMode="multiple"
+                                            disallowEmptySelection={true}
+                                            className=""
+                                            aria-label="Select Shop"
+                                            placeholder="Select Shop"
+                                            selectedKeys={shopId ? [shopId] : []}
+                                            onChange={(e) => {
+                                                console.log(e.target.value);
+                                                setShopId(e.target.value);
+                                            }}
+                                        >
+                                            {shopList.map((shop) => (
+                                                <SelectItem key={String(shop.id)}>{shop.name}</SelectItem>
+                                            ))}
+                                        </Select>
+                                    </div>
+
                                     <div>
                                         <p className={label}>STRAIN NAME</p>
                                         <Input

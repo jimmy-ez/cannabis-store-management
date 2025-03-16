@@ -71,6 +71,7 @@ export default function CannabisModal({ isOpen, onClose, onOpen, selectedProduct
             const productData: IProduct = {
                 id: isEdit ? productId : undefined,
                 name: strainName,
+                shopId: "shop1", // Mock
                 detail: "",
                 cost: cost,
                 price: price,

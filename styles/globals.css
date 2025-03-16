@@ -4,7 +4,7 @@
 
 @layer base {
     html {
-        --color-cannabis: #0fab79;
+        --color-cannabis: rgb(2, 193, 164);
         --color-gray-hover: #3d3e42;
         --color-menu: #a3a5b6;
     }

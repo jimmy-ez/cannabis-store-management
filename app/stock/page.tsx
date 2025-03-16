@@ -44,7 +44,7 @@ export default function StockPage() {
   return (
     <div className="w-full">
       <div className="flex flex-row justify-between items-center">
-        <h1 className={`text-2xl text-white border-b-2 border-cannabis`}>{"STOCK MANAGEMENT"}</h1>
+        <h1 className={`text-2xl text-white border-b-2 border-cannabis`}>{"STOCK"}</h1>
         <div
           role="button"
           onClick={onOpenAddCannabis}

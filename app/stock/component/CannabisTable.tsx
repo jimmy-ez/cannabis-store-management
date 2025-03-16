@@ -28,7 +28,7 @@ export default function CannabisTable({ products, handleSelectProduct }: Cannabi
                     <TableColumn className={`${tableHeaderClass}`} >COST</TableColumn>
                     <TableColumn className={`${tableHeaderClass}`} >LOCAL PRICE</TableColumn>
                     <TableColumn className={`${tableHeaderClass}`} >PRICE</TableColumn>
-                    <TableColumn className={`${tableHeaderClass}`} >STOCK</TableColumn>
+                    <TableColumn className={`${tableHeaderClass}`} >{`STOCK (g.)`}</TableColumn>
                     <TableColumn className={`${tableHeaderClass}`} >{""}</TableColumn>
                 </TableHeader>
                 <TableBody>
