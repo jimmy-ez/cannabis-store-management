@@ -23,6 +23,9 @@ export const options: NextAuthOptions = {
           if(user.role) {
             session.user.role = user.role;
           }
+          if(user.shopId) {
+            session.user.shopId = user.shopId;
+          }
         }
       }
 

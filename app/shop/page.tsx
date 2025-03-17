@@ -18,11 +18,24 @@ export default function StockPage() {
 
   const { isOpen: isOpenAddCannabis, onClose: onCloseAddCannabis, onOpen: onOpenAddCannabis } = useDisclosure();
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (keyword?: string) => {
+    let products: IProduct[] = [];
     const fetchedProducts = await getAvailableProducts();
 
-    const othersProducts = fetchedProducts.filter((product: IProduct) => !product.isStrain);
-    const cannabisProducts = fetchedProducts.filter((product: IProduct) => product.isStrain);
+    if (keyword) {
+      const filteredProducts = fetchedProducts.filter((product) =>
+        product.name.toLowerCase().includes(keyword) ||
+        product.cannabis?.type.toLowerCase().includes(keyword) ||
+        product.cannabis?.feeling.toLowerCase().includes(keyword) ||
+        product.cannabis?.taste.toLowerCase().includes(keyword)
+      );
+      products = filteredProducts;
+    } else {
+      products = fetchedProducts;
+    }
+
+    const othersProducts = products.filter((product: IProduct) => !product.isStrain);
+    const cannabisProducts = products.filter((product: IProduct) => product.isStrain);
 
     setProducts(othersProducts);
     setCannabis(cannabisProducts);
@@ -46,11 +59,7 @@ export default function StockPage() {
     if (!searchValue) {
       fetchProducts();
     } else {
-      const filteredProducts = cannabis.filter((product) =>
-        product.name.toLowerCase().includes(searchValue) ||
-        product.cannabis?.type.toLowerCase().includes(searchValue)
-      );
-      setCannabis(filteredProducts);
+      fetchProducts(searchValue);
     }
   }, [searchValue]);
 

@@ -21,26 +21,26 @@ import { SearchIcon } from "@/components/icons";
 
 const label = `text-sm font-semibold pb-2 pl-1`;
 
-interface AddCannabisModalProps extends ModalProps {
+interface AddProductModalProps extends ModalProps {
     selectedProduct?: IProduct;
-    defaultShopId?: string;
 }
 
-export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProduct, defaultShopId }: AddCannabisModalProps) {
+export default function AddProductModal({ isOpen, onClose, onOpen, selectedProduct }: AddProductModalProps) {
     const router = useRouter();
 
-    const [strainName, setStrainName] = useState<string>();
-    const [cnbType, setCnbType] = useState<"hybrid" | "indica" | "sativa">("hybrid");
-    const [thc, setThc] = useState<number>();
-    const [cbd, setCbd] = useState<number>();
-    const [feeling, setFeeling] = useState<string>();
-    const [taste, setTaste] = useState<string>();
+    const [productName, setproductName] = useState<string>();
+    // const [cnbType, setCnbType] = useState<"hybrid" | "indica" | "sativa">("hybrid");
+    // const [thc, setThc] = useState<number>();
+    // const [cbd, setCbd] = useState<number>();
+    // const [feeling, setFeeling] = useState<string>();
+    // const [taste, setTaste] = useState<string>();
     const [price, setPrice] = useState<number>();
     const [localPrice, setLocalPrice] = useState<number>();
     const [stock, setStock] = useState<number>();
     const [cost, setCost] = useState<number>();
     const [isActive, setIsActive] = useState<boolean>(true);
     const [shopId, setShopId] = useState<string>();
+    const [detail, setDetail] = useState<string>();
 
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [productId, setProductId] = useState<string>();
@@ -56,23 +56,17 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
     }
 
     useEffect(() => {
-        if (defaultShopId) {
-            setShopId(defaultShopId);
-        }
-    }, [defaultShopId]);
-
-    useEffect(() => {
         fetchedShop();
     }, []);
 
     useEffect(() => {
         if (selectedProduct) {
-            setStrainName(selectedProduct.name);
-            setCnbType(selectedProduct.cannabis?.type as "hybrid" | "indica" | "sativa");
-            setThc(selectedProduct.cannabis?.thc ?? 0);
-            setCbd(selectedProduct.cannabis?.cbd ?? 0);
-            setFeeling(selectedProduct.cannabis?.feeling);
-            setTaste(selectedProduct.cannabis?.taste);
+            setproductName(selectedProduct.name);
+            // setCnbType(selectedProduct.cannabis?.type as "hybrid" | "indica" | "sativa");
+            // setThc(selectedProduct.cannabis?.thc ?? 0);
+            // setCbd(selectedProduct.cannabis?.cbd ?? 0);
+            // setFeeling(selectedProduct.cannabis?.feeling);
+            // setTaste(selectedProduct.cannabis?.taste);
             setPrice(selectedProduct.price);
             setLocalPrice(selectedProduct.localPrice);
             setStock(selectedProduct.stock);
@@ -86,27 +80,27 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
     const handleSubmit = async () => {
         setIsLoading(true);
         try {
-            if (!strainName || !cnbType || !feeling || !taste || !price || !localPrice || !stock || !shopId) {
+            if (!productName || !price || !localPrice || !stock || !shopId || !detail) {
                 return toast.error("Please fill all required fields");
             }
 
             const productData: IProduct = {
-                name: strainName,
+                name: productName,
                 shopId: shopId,
-                detail: "",
+                detail: detail,
                 cost: cost ?? 0,
                 price: price,
                 localPrice: localPrice,
                 stock: stock,
                 isActive: isActive,
-                isStrain: true,
-                cannabis: {
-                    type: cnbType,
-                    thc: thc ?? 0,
-                    cbd: cbd ?? 0,
-                    feeling: feeling,
-                    taste: taste
-                },
+                isStrain: false,
+                // cannabis: {
+                //     type: cnbType,
+                //     thc: thc ?? 0,
+                //     cbd: cbd ?? 0,
+                //     feeling: feeling,
+                //     taste: taste
+                // },
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
@@ -137,12 +131,12 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
     }
 
     const handleClearState = () => {
-        setStrainName("");
-        setCnbType("hybrid");
-        setThc(0);
-        setCbd(0);
-        setFeeling("");
-        setTaste("");
+        setproductName("");
+        // setCnbType("hybrid");
+        // setThc(0);
+        // setCbd(0);
+        // setFeeling("");
+        // setTaste("");
         setPrice(0);
         setLocalPrice(0);
         setStock(0);
@@ -157,24 +151,15 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
         onClose();
     }
 
-    const handleInfo = () => {
-        if (strainName) {
-            const qName = strainName?.split(" ").join("+");
-            window.open(`https://www.leafly.com/search?q=${qName}&searchCategory=strain`, "_blank");
-        } else {
-            toast.error("Please enter strain name");
-        }
-    }
-
     return (
-        <Modal size="3xl" isOpen={isOpen} onOpenChange={onClose}>
+        <Modal size="xl" isOpen={isOpen} onOpenChange={onClose}>
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader className="flex flex-col gap-1 text-cannabis">ADD CANNABIS PRODUCT</ModalHeader>
+                        <ModalHeader className="flex flex-col gap-1 text-cannabis">ADD OTHERS PRODUCT</ModalHeader>
                         <ModalBody className="max-h-[70vh] overflow-y-scroll">
                             <form>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="flex flex-col gap-4">
 
                                     <div>
                                         <p className={label}>SHOP LIST</p>
@@ -199,76 +184,18 @@ export default function AddCannabisModal({ isOpen, onClose, onOpen, selectedProd
                                     <div>
                                         <p className={label}>STRAIN NAME</p>
                                         <Input
-                                            value={strainName ?? undefined}
-                                            onChange={(e) => setStrainName(e.target.value)}
+                                            value={productName ?? undefined}
+                                            onChange={(e) => setproductName(e.target.value)}
                                             placeholder="Enter strain name"
-                                            endContent={
-                                                <div role="button" onClick={handleInfo} className="bg-gray-hover hover:bg-cannabis cursor-pointer p-[6px] rounded-sm">
-                                                    <SearchIcon />
-                                                </div>
-                                            }
                                         />
                                     </div>
 
                                     <div>
-                                        <p className={label}>STRAIN TYPE</p>
-                                        <Select
-                                            selectedKeys={[cnbType ? cnbType : "hybrid"]}
-                                            multiple={false}
-                                            disallowEmptySelection={true}
-                                            onChange={(e) => {
-                                                setCnbType(e.target.value as "hybrid" | "indica" | "sativa");
-                                            }}
-                                            aria-label="Select Strain Type"
-                                        >
-                                            <SelectSection title="Select Type">
-                                                <SelectItem key="indica">Indica</SelectItem>
-                                                <SelectItem key="sativa">Sativa</SelectItem>
-                                                <SelectItem key="hybrid">Hybrid</SelectItem>
-                                            </SelectSection>
-                                        </Select>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className={label}>{"THC%"}</p>
-                                            <Input
-                                                type="number"
-                                                value={String(thc) ?? undefined}
-                                                onChange={(e) => {
-                                                    setThc(Number(e.target.value));
-                                                }}
-                                                placeholder="Enter THC%"
-                                            />
-                                        </div>
-                                        <div>
-                                            <p className={label}>{"CBD%"}</p>
-                                            <Input
-                                                type="number"
-                                                value={String(cbd) ?? undefined}
-                                                onChange={(e) => {
-                                                    setCbd(Number(e.target.value));
-                                                }}
-                                                placeholder="Enter CBD%"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <p className={label}>TASTE</p>
+                                        <p className={label}>DETAIL</p>
                                         <Input
-                                            value={taste ?? undefined}
-                                            onChange={(e) => setTaste(e.target.value)}
-                                            placeholder="Enter strain taste"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <p className={label}>FEELING</p>
-                                        <Input
-                                            value={feeling ?? undefined}
-                                            onChange={(e) => setFeeling(e.target.value)}
-                                            placeholder="Enter strain feeling"
+                                            value={detail ?? undefined}
+                                            onChange={(e) => setDetail(e.target.value)}
+                                            placeholder="Enter product detail"
                                         />
                                     </div>
 

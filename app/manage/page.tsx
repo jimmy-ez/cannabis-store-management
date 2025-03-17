@@ -84,12 +84,12 @@ export default function ManagePage() {
                 </div>
             </div>
 
-            <div className="w-full mt-4 flex flex-row gap-4">
-                <div className="w-1/2">
+            <div className="w-full mt-4 flex flex-col gap-4">
+                <div className="">
                     <p className="ml-2 font-bold mb-2 text-cannabis">SHOP LIST</p>
                     <ShopTable shops={shops} handleSelectShop={handleSelectShop} />
                 </div>
-                <div className="w-1/2">
+                <div className="mt-2">
                     <p className="ml-2 font-bold mb-2 text-cannabis">USER LIST</p>
                     <UserTable users={users} shops={shops} handleSelectUser={handleSelectUser} />
                 </div>

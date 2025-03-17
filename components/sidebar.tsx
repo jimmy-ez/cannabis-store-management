@@ -74,7 +74,7 @@ export default function Sidebar() {
                                     <p className="text-xs font-bold">ORDERS</p>
                                 </div>
                             </button>
-                            <button
+                            {session?.user.role === "manager" && <button
                                 className={
                                     cn(`${menuClassName}`, activeMenu === 3 && "bg-gray-hover")
                                 }
@@ -84,7 +84,7 @@ export default function Sidebar() {
                                     <BoxIcon width={35} height={45} color="#a3a5b6" />
                                     <p className="text-xs font-bold">STOCK</p>
                                 </div>
-                            </button>
+                            </button>}
                             {session?.user.role === "manager" && <button
                                 className={
                                     cn(`${menuClassName}`, activeMenu === 4 && "bg-gray-hover")
