@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function StockPage() {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const router = useRouter();
 
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -43,7 +43,7 @@ export default function StockPage() {
   }
 
   const fetchShopList = async () => {
-    const fetchedShop = await fetchDataFromFirestore("shops");
+    const fetchedShop = (await fetchDataFromFirestore("shops")).filter((shop: IShop) => shop.isActive);
     if (fetchedShop && session && session.user.shopId) {
       const filteredShops = fetchedShop.filter(shop => session.user.shopId.includes(shop.id));
       setShops(filteredShops);
@@ -53,7 +53,7 @@ export default function StockPage() {
   };
 
   useEffect(() => {
-    if(session && session.user.role !== "manager") {
+    if (sessionStatus == "authenticated" && (session.user.role !== "manager" && session.user.role !== "owner")) {
       router.push("/");
     }
     fetchShopList();

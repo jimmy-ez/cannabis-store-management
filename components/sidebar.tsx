@@ -11,6 +11,8 @@ export default function Sidebar() {
     const pathName = usePathname();
 
     const { data: session } = useSession();
+    console.log("session", session);
+    
 
     const [activeMenu, setActiveMenu] = useState<number>(0);
 
@@ -74,7 +76,7 @@ export default function Sidebar() {
                                     <p className="text-xs font-bold">ORDERS</p>
                                 </div>
                             </button>
-                            {session?.user.role === "manager" && <button
+                            {(session?.user.role === "manager" || session?.user.role === "owner") && <button
                                 className={
                                     cn(`${menuClassName}`, activeMenu === 3 && "bg-gray-hover")
                                 }
@@ -85,7 +87,7 @@ export default function Sidebar() {
                                     <p className="text-xs font-bold">STOCK</p>
                                 </div>
                             </button>}
-                            {session?.user.role === "manager" && <button
+                            {session?.user.role === "owner" && <button
                                 className={
                                     cn(`${menuClassName}`, activeMenu === 4 && "bg-gray-hover")
                                 }

@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function ManagePage() {
-    const { data: session } = useSession();
+    const { data: session, status: sessionStatus } = useSession();
     const router = useRouter();
 
     const { isOpen: isOpenAddUser, onClose: onCloseAddUser, onOpen: onOpenAddUser } = useDisclosure();
@@ -21,6 +21,9 @@ export default function ManagePage() {
 
     const [shops, setShops] = useState<IShop[]>([]);
     const [users, setUsers] = useState<IUser[]>([]);
+
+    const [selectedShop, setSelectedShop] = useState<IShop>();
+    const [selectedUser, setSelectedUser] = useState<IUser>();
 
     const fetchShopData = async () => {
         const fetchedShop = await fetchDataFromFirestore("shops");
@@ -43,24 +46,36 @@ export default function ManagePage() {
 
     useEffect(() => {
         console.log("session", session);
-        if (session && session.user.role !== "manager") {
+        if (sessionStatus == "authenticated" && session && session.user.role !== "owner") {
             router.push("/");
         }
     }, [session]);
 
     const handleSelectShop = async (shop: IShop) => {
-        console.log("shop", shop);
+        setSelectedShop(shop);
+        onOpenAddShop();
+    };
+
+    const handleCloseAddShop = async () => {
+        onCloseAddShop();
+        fetchShopData();
     };
 
     const handleSelectUser = async (user: any) => {
-        console.log("user", user);
+        setSelectedUser(user);
+        onOpenAddUser();
+    };
+
+    const handleCloseAddUser = async () => {
+        onCloseAddUser();
+        fetchUser();
     };
 
     return (
         <div className="w-full">
 
-            <AddUserModal isOpen={isOpenAddUser} onClose={onCloseAddUser} onOpen={onOpenAddUser} />
-            <AddShopModal isOpen={isOpenAddShop} onClose={onCloseAddShop} onOpen={onOpenAddShop} />
+            <AddUserModal isOpen={isOpenAddUser} onClose={handleCloseAddUser} onOpen={onOpenAddUser} selectedUser={selectedUser} />
+            <AddShopModal isOpen={isOpenAddShop} onClose={handleCloseAddShop} onOpen={onOpenAddShop} selectedShop={selectedShop} />
 
             <div className="flex flex-row justify-between items-center">
                 <h1 className={`text-2xl text-white border-b-2 border-cannabis`}>{"MANAGEMENT"}</h1>

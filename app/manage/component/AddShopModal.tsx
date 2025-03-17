@@ -38,6 +38,7 @@ export default function AddShopModal({ isOpen, onClose, onOpen, selectedShop }: 
     const [shopId, setShopId] = useState<string>();
 
     useEffect(() => {
+        console.log("selectedShop", selectedShop);
         if (selectedShop) {
             setShopId(selectedShop.id);
             setName(selectedShop.name);
@@ -66,9 +67,14 @@ export default function AddShopModal({ isOpen, onClose, onOpen, selectedShop }: 
                 isActive: isActive,
             };
 
-            if (isEdit) {
-                // updateDataToFirestore("shops", data, data.id);
-                // toast.success("Shop updated successfully");
+            if (isEdit && selectedShop && selectedShop.id) {
+                const res = await updateDataToFirestore("shops", selectedShop?.id, data);
+                if (res) {
+                    toast.success("Shop updated successfully");
+                    handleClose();
+                } else {
+                    toast.error("Failed to update shop");
+                }
             } else {
                 console.log("data", data);
                 delete data.id;

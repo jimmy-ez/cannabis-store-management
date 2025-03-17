@@ -13,17 +13,27 @@ export const options: NextAuthOptions = {
   ],
   session: { strategy: "jwt" },
   callbacks: {
+    async signIn({ user }) {
+      if (!user.email) {
+        return false; // Prevent sign-in if no email is provided
+      }
+      const existingUser = await getUserByEmail(user.email) as IUser;
+      if (!existingUser) {
+        return false; // Prevent sign-in if the user is not in the database
+      }
+      return true; // Allow sign-in if the user exists
+    },
     async session({ session, token }) {
       if (token.sub) {
         session.user.id = token.sub;
       }
       if (token.email) {
         const user = await getUserByEmail(token.email) as IUser;
-        if(user) {
-          if(user.role) {
+        if (user) {
+          if (user.role) {
             session.user.role = user.role;
           }
-          if(user.shopId) {
+          if (user.shopId) {
             session.user.shopId = user.shopId;
           }
         }
@@ -31,5 +41,9 @@ export const options: NextAuthOptions = {
 
       return session;
     },
+  },
+  pages: {
+    signIn: "/login", // Redirect failed sign-ins to /login
+    // error: "/error",  // Redirect errors (like UserNotFound) to /login
   },
 };

@@ -33,6 +33,7 @@ export default function UserTable({ users, shops, handleSelectUser }: UserTableP
             <Table aria-label="Example static collection table" style={{ width: '100%' }}>
                 <TableHeader>
                     <TableColumn className={`${tableHeaderClass}`} >NAME</TableColumn>
+                    <TableColumn className={`${tableHeaderClass}`} >ROLE</TableColumn>
                     <TableColumn className={`${tableHeaderClass}`} >E-MAIL</TableColumn>
                     <TableColumn className={`${tableHeaderClass}`} >SHOP</TableColumn>
                     <TableColumn className={`${tableHeaderClass}`} >{""}</TableColumn>
@@ -46,7 +47,8 @@ export default function UserTable({ users, shops, handleSelectUser }: UserTableP
                             }
                             onClick={() => { handleSelectUser(user) }}
                         >
-                            <TableCell style={{ width: '10%' }}>{user.name}</TableCell>
+                            <TableCell style={{ width: '15%' }}>{user.name}</TableCell>
+                            <TableCell style={{ width: '10%' }} className="capitalize">{user.role}</TableCell>
                             <TableCell style={{ width: '15%' }}>{user.email}</TableCell>
                             <TableCell style={{ width: '30%' }}>{getShopName(user.shopId)}</TableCell>
                             <TableCell style={{ width: '3%' }}>

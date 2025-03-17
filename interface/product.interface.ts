@@ -21,3 +21,24 @@ export interface IProduct {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface IOrderProduct {
+  product: {
+    id: string;
+    name: string;
+  }
+  quantity: number;
+  total: number;
+}
+
+export interface IOrder {
+  id?: string;
+  shopId: string;
+  sellerId: string;
+  products: IOrderProduct[];
+  total: number;
+  status: "pending" | "completed" | "cancelled";
+  note?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

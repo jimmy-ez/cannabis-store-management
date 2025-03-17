@@ -79,7 +79,7 @@ export const getAvailableProducts = async () => {
 
 export const getUserByEmail = async (email: string) => {
   const dataCollection = collection(db, "users");
-  const q = query(dataCollection, where("email", "==", email));
+  const q = query(dataCollection, where("email", "==", email), where("isActive", "==", true));
 
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map((doc) => ({

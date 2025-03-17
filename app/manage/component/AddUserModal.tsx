@@ -25,19 +25,14 @@ const label = `text-sm font-semibold pb-2 pl-1`;
 const roleList = [
     { value: "manager", label: "Manager" },
     { value: "staff", label: "Staff" },
-];
-
-const shopList = [
-    { value: "shop1", label: "Shop 1" },
-    { value: "shop2", label: "Shop 2" },
-    { value: "shop3", label: "Shop 3" },
+    { value: "owner", label: "Owner" },
 ];
 
 interface AddUserModalProps extends ModalProps {
-    // selectedProduct?: IProduct;
+    selectedUser?: IUser;
 }
 
-export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalProps) {
+export default function AddUserModal({ isOpen, onClose, onOpen, selectedUser }: AddUserModalProps) {
     const router = useRouter();
 
     const [name, setName] = useState<string>();
@@ -61,6 +56,18 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
     useEffect(() => {
         fetchShopList();
     }, []);
+
+    useEffect(() => {
+        if (selectedUser) {
+            console.log("selectedUser", selectedUser);
+            setName(selectedUser.name);
+            setEmail(selectedUser.email);
+            setRole(selectedUser.role);
+            setShopId(selectedUser.shopId);
+            setIsActive(selectedUser.isActive);
+            setIsEdit(true);
+        }
+    }, [selectedUser]);
 
     const handleClose = () => {
         onClose();
@@ -88,10 +95,15 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
                 isActive,
             };
 
-            if (isEdit) {
-                // Update data
+            if (isEdit && selectedUser && selectedUser.id) {
+                const res = await updateDataToFirestore("users", selectedUser?.id, data);
+                if (res) {
+                    toast.success("Shop user updated successfully");
+                    handleClose();
+                } else {
+                    toast.error("Failed to update user");
+                }
             } else {
-                console.log("data", data);
                 delete data.id;
                 const resId = await addDataToFirestore("users", data);
                 if (resId) {
@@ -131,6 +143,7 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
                                             value={email ?? undefined}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Enter user's email"
+                                            readOnly={isEdit}
                                         />
                                     </div>
                                     <div>
@@ -138,8 +151,8 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
                                         <Select
                                             disallowEmptySelection={true}
                                             className=""
-                                            aria-label="Favorite Animal"
-                                            placeholder="Select an animal"
+                                            aria-label="Favorite Role"
+                                            placeholder="Select a Role"
                                             selectedKeys={role ? [role] : ["staff"]}
                                             onChange={(e) => {
                                                 setRole(e.target.value);
@@ -158,12 +171,11 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
                                             className=""
                                             aria-label="Select Shop"
                                             placeholder="Select Shop"
-                                            // selectedKeys={shopId}
+                                            selectedKeys={shopId}
                                             onChange={(e) => {
-                                                console.log(e.target.value);
                                                 const splitValue = e.target.value.split(",");
                                                 console.log("splitValue", splitValue);
-                                                if (splitValue.length > 1) {
+                                                if (splitValue.length > 0) {
                                                     setShopId(splitValue);
                                                 }
                                             }}
@@ -177,7 +189,7 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
                             </form>
                         </ModalBody>
                         <ModalFooter className="flex flex-row justify-between">
-                            {/* <div>
+                            <div>
                                 <Switch
                                     classNames={{
                                         thumb: "bg-white",
@@ -189,7 +201,7 @@ export default function AddUserModal({ isOpen, onClose, onOpen }: AddUserModalPr
                                 >
                                     {isActive ? "ACTIVE" : "INACTIVE"}
                                 </Switch>
-                            </div> */}
+                            </div>
                             <div className="flex gap-4">
                                 <Button color="danger" onPress={handleClose}>
                                     CLOSE

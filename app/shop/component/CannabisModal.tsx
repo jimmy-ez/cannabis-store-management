@@ -61,58 +61,6 @@ export default function CannabisModal({ isOpen, onClose, onOpen, selectedProduct
         }
     }, [selectedProduct]);
 
-    const handleSubmit = async () => {
-        setIsLoading(true);
-        try {
-            if (!strainName || !cnbType || !feeling || !taste || !price || !localPrice || !stock || !cost) {
-                return toast.error("Please fill all required fields");
-            }
-
-            const productData: IProduct = {
-                id: isEdit ? productId : undefined,
-                name: strainName,
-                shopId: "shop1", // Mock
-                detail: "",
-                cost: cost,
-                price: price,
-                localPrice: localPrice,
-                stock: stock,
-                isActive: isActive,
-                isStrain: true,
-                cannabis: {
-                    type: cnbType,
-                    thc: thc ?? 0,
-                    cbd: cbd ?? 0,
-                    feeling: feeling,
-                    taste: taste
-                },
-                createdAt: new Date(),
-                updatedAt: new Date()
-            }
-
-            if (isEdit && productId) {
-                const res = await updateDataToFirestore("products", productId, productData);
-                if (res) {
-                    toast.success("Product updated successfully");
-                    handleClose();
-                } else {
-                    toast.error("Failed to update product");
-                }
-            } else {
-                const resId = await addDataToFirestore("products", productData);
-                if (resId) {
-                    toast.success("Product added successfully");
-                    handleClose();
-                } else {
-                    toast.error("Failed to add product");
-                }
-            }
-        }
-        finally {
-            setIsLoading(false);
-        }
-    }
-
     const handleClearState = () => {
         setStrainName("");
         setCnbType("hybrid");
@@ -133,6 +81,10 @@ export default function CannabisModal({ isOpen, onClose, onOpen, selectedProduct
         handleClearState();
         onClose();
     }
+
+    const handleAddOrder = async () => {
+        // handleClearState();
+    };
 
     return (
         <Modal size="xl" isOpen={isOpen} onOpenChange={onClose}>

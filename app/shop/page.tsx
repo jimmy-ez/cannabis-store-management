@@ -6,12 +6,13 @@ import { fetchDataFromFirestore, addDataToFirestore, getAvailableProducts } from
 
 import { useEffect, useState } from "react";
 import CannabisTable from "./component/CannabisTable";
-import { Tab, Tabs, useDisclosure } from "@heroui/react"
+import { Button, Tab, Tabs, useDisclosure } from "@heroui/react"
 import CannabisModal from "./component/CannabisModal";
 import { Input } from "@heroui/react"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { IShop } from "@/interface/general.interface";
+import AddOrderModal from "../orders/component/AddOrderModal";
 
 const types = [
   {
@@ -41,14 +42,20 @@ export default function StockPage() {
   const [selectedType, setSelectedType] = useState<string>("all");
 
   const { isOpen: isOpenAddCannabis, onClose: onCloseAddCannabis, onOpen: onOpenAddCannabis } = useDisclosure();
+  const { isOpen: isOpenAddOrder, onClose: onCloseAddOrder, onOpen: onOpenAddOrder } = useDisclosure();
 
-  const fetchProducts = async (shopId: string, keyword?: string) => {
+  const fetchProducts = async (shopId: string, keyword?: string, type?: string) => {
     let products: IProduct[] = [];
-    let fetchedProducts = await fetchDataFromFirestore("products");
+    let fetchedProducts = (await fetchDataFromFirestore("products")).filter((product: IProduct) => product.isActive);
 
     if (shopId) {
       const filteredProducts = await fetchedProducts.filter((product) => product.shopId === shopId);
       fetchedProducts = filteredProducts
+    }
+
+    if (type && type !== "all") {
+      const filteredProducts = fetchedProducts.filter((product) => product.cannabis?.type.toLowerCase() === type);
+      fetchedProducts = filteredProducts;
     }
 
     if (keyword) {
@@ -71,7 +78,7 @@ export default function StockPage() {
   }
 
   const fetchShopList = async () => {
-    const fetchedShop = await fetchDataFromFirestore("shops");
+    const fetchedShop = (await fetchDataFromFirestore("shops")).filter((shop: IShop) => shop.isActive);
     if (fetchedShop && session && session.user.shopId) {
       const filteredShops = fetchedShop.filter(shop => session.user.shopId.includes(shop.id));
       setShops(filteredShops);
@@ -88,15 +95,16 @@ export default function StockPage() {
     if (selectedShop) {
       fetchProducts(selectedShop);
     }
+    console.log("selectedShop", selectedShop);
   }, [selectedShop]);
 
   useEffect(() => {
     if (selectedType === "all") {
-      fetchProducts(selectedShop!);
+      fetchProducts(selectedShop!, searchValue);
     } else {
-      fetchProducts(selectedShop!, selectedType);
+      fetchProducts(selectedShop!, searchValue, selectedType);
     }
-  }, [selectedType]);
+  }, [selectedType, searchValue]);
 
   const handleSelectProduct = async (product: IProduct) => {
     setSelectedProduct(product);
@@ -108,19 +116,21 @@ export default function StockPage() {
     onCloseAddCannabis();
   }
 
-  useEffect(() => {
-    if (!searchValue) {
-      fetchProducts(selectedShop!);
-    } else {
-      fetchProducts(selectedShop!, searchValue.toLowerCase());
-    }
-  }, [searchValue]);
+
 
   return (
     <div className="w-full">
       <div className="flex flex-row justify-between items-center">
         <h1 className={`text-2xl text-white border-b-2 border-cannabis`}>{"ALL PRODUCTS"}</h1>
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
+          <div
+            role="button"
+            onClick={onOpenAddOrder}
+            className="w-full p-3 bg-[#2a2a2d] rounded-md hover:bg-gray-hover cursor-pointer flex flex-row items-center"
+          >
+            <AddIcon width={25} height={25} color="#0fab79" />
+            <p className="text-sm font-semibold pl-2">ADD ORDER</p>
+          </div>
           <Input
             type="text"
             placeholder="Search by name..."
@@ -133,6 +143,8 @@ export default function StockPage() {
               const searchValue = e.target.value;
               setSearchValue(searchValue);
             }}
+            isClearable
+            onClear={() => setSearchValue("")}
           />
         </div>
         {/* <div
@@ -149,6 +161,7 @@ export default function StockPage() {
           <Tabs aria-label="Options" selectedKey={selectedShop} onSelectionChange={(e) => {
             setSelectedShop(e.toString());
             setSearchValue("");
+            setSelectedType("all");
           }}>
             {
               shops.map((shop) => (
@@ -176,6 +189,13 @@ export default function StockPage() {
           onClose={handleCloseAddCannabis}
           onOpen={onOpenAddCannabis}
           selectedProduct={selectedProduct}
+        />
+
+        <AddOrderModal
+          defaultShopId={selectedShop}
+          isOpen={isOpenAddOrder}
+          onClose={onCloseAddOrder}
+          onOpen={onOpenAddOrder}
         />
       </div>
     </div>
