@@ -48,7 +48,7 @@ export default function StockPage() {
       const filteredShops = fetchedShop.filter(shop => session.user.shopId.includes(shop.id));
       setShops(filteredShops);
       setSelectedShop(filteredShops[0].id);
-      fetchProducts();
+      fetchProducts(filteredShops[0].id);
     }
   };
 
@@ -116,7 +116,6 @@ export default function StockPage() {
                 <Tab key={shop.id} title={shop.name}></Tab>))
             }
           </Tabs>
-
         </div>
 
         <CannabisTable

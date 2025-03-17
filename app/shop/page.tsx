@@ -6,21 +6,50 @@ import { fetchDataFromFirestore, addDataToFirestore, getAvailableProducts } from
 
 import { useEffect, useState } from "react";
 import CannabisTable from "./component/CannabisTable";
-import { useDisclosure } from "@heroui/react"
+import { Tab, Tabs, useDisclosure } from "@heroui/react"
 import CannabisModal from "./component/CannabisModal";
 import { Input } from "@heroui/react"
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { IShop } from "@/interface/general.interface";
+
+const types = [
+  {
+    id: "all", name: "All"
+  },
+  {
+    id: "indica", name: "Indica"
+  }, {
+    id: "sativa", name: "Sativa"
+  }, {
+    id: "hybrid", name: "Hybrid"
+  },
+]
 
 export default function StockPage() {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [products, setProducts] = useState<IProduct[]>([]);
   const [cannabis, setCannabis] = useState<IProduct[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<IProduct>();
   const [searchValue, setSearchValue] = useState<string>("");
 
+  const [shops, setShops] = useState<IShop[]>([]);
+  const [selectedShop, setSelectedShop] = useState<string>();
+
+  const [selectedType, setSelectedType] = useState<string>("all");
+
   const { isOpen: isOpenAddCannabis, onClose: onCloseAddCannabis, onOpen: onOpenAddCannabis } = useDisclosure();
 
-  const fetchProducts = async (keyword?: string) => {
+  const fetchProducts = async (shopId: string, keyword?: string) => {
     let products: IProduct[] = [];
-    const fetchedProducts = await getAvailableProducts();
+    let fetchedProducts = await fetchDataFromFirestore("products");
+
+    if (shopId) {
+      const filteredProducts = await fetchedProducts.filter((product) => product.shopId === shopId);
+      fetchedProducts = filteredProducts
+    }
 
     if (keyword) {
       const filteredProducts = fetchedProducts.filter((product) =>
@@ -41,9 +70,33 @@ export default function StockPage() {
     setCannabis(cannabisProducts);
   }
 
+  const fetchShopList = async () => {
+    const fetchedShop = await fetchDataFromFirestore("shops");
+    if (fetchedShop && session && session.user.shopId) {
+      const filteredShops = fetchedShop.filter(shop => session.user.shopId.includes(shop.id));
+      setShops(filteredShops);
+      setSelectedShop(filteredShops[0].id);
+      fetchProducts(filteredShops[0].id);
+    }
+  };
+
   useEffect(() => {
-    fetchProducts();
+    fetchShopList();
   }, []);
+
+  useEffect(() => {
+    if (selectedShop) {
+      fetchProducts(selectedShop);
+    }
+  }, [selectedShop]);
+
+  useEffect(() => {
+    if (selectedType === "all") {
+      fetchProducts(selectedShop!);
+    } else {
+      fetchProducts(selectedShop!, selectedType);
+    }
+  }, [selectedType]);
 
   const handleSelectProduct = async (product: IProduct) => {
     setSelectedProduct(product);
@@ -51,15 +104,15 @@ export default function StockPage() {
   };
 
   const handleCloseAddCannabis = async () => {
-    fetchProducts();
+    fetchProducts(selectedShop!);
     onCloseAddCannabis();
   }
 
   useEffect(() => {
     if (!searchValue) {
-      fetchProducts();
+      fetchProducts(selectedShop!);
     } else {
-      fetchProducts(searchValue);
+      fetchProducts(selectedShop!, searchValue.toLowerCase());
     }
   }, [searchValue]);
 
@@ -75,8 +128,9 @@ export default function StockPage() {
               "inputWrapper": "bg-gray-hover h-[48px] w-[300px] rounded-md group-data-[focus=true]:bg-cannabis ",
               "input": "text-black group-data-[focus=true]:placeholder:text-gray-300",
             }}
+            value={searchValue}
             onChange={(e) => {
-              const searchValue = e.target.value.toLowerCase();
+              const searchValue = e.target.value;
               setSearchValue(searchValue);
             }}
           />
@@ -90,6 +144,29 @@ export default function StockPage() {
         </div> */}
       </div>
       <div className="mt-8">
+
+        <div className="mb-4 flex flex-row justify-between items-center">
+          <Tabs aria-label="Options" selectedKey={selectedShop} onSelectionChange={(e) => {
+            setSelectedShop(e.toString());
+            setSearchValue("");
+          }}>
+            {
+              shops.map((shop) => (
+                <Tab key={shop.id} title={shop.name}></Tab>))
+            }
+          </Tabs>
+          <div>
+            <Tabs aria-label="Type Option" selectedKey={selectedType} onSelectionChange={(e) => {
+              setSelectedType(e.toString());
+            }}>
+              {
+                types.map((type) => (
+                  <Tab key={type.id} title={type.name}></Tab>))
+              }
+            </Tabs>
+          </div>
+        </div>
+
         <CannabisTable
           products={cannabis}
           handleSelectProduct={handleSelectProduct}

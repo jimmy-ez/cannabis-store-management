@@ -18,7 +18,14 @@ export default function CannabisTable({ products, handleSelectProduct }: Cannabi
     const tableHeaderClass = "text-cannabis";
     return (
         <div>
-            <Table aria-label="Example static collection table" style={{ width: '100%' }}>
+            <Table
+                isHeaderSticky
+                aria-label="Example static collection table"
+                style={{ width: '100%' }}
+                classNames={{
+                    wrapper: "max-h-[70vh] overflow-y-scroll",
+                }}
+            >
                 <TableHeader>
                     <TableColumn className={`${tableHeaderClass}`} >NAME</TableColumn>
                     <TableColumn className={`${tableHeaderClass}`} >TYPE</TableColumn>
