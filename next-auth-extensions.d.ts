@@ -7,6 +7,7 @@ declare module "next-auth" {
       id: string;
       role: string;
       shopId: string[];
+      username: string;
     } & DefaultSession["user"];
   }
 }

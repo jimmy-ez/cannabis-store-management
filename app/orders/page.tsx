@@ -27,9 +27,24 @@ export default function StockPage() {
     const { isOpen: isOpenAddOrder, onClose: onCloseAddOrder, onOpen: onOpenAddOrder } = useDisclosure();
 
     const fetchOrders = async (shopId: string) => {
-        const fetchedOrders = (await fetchDataFromFirestore("orders", "createdAt", "desc")).filter((order: any) => order.shopId === shopId);
-        if (fetchedOrders) {
-            setOrders(fetchedOrders);
+        if (session?.user.role === "staff") {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const fetchedOrders = (await fetchDataFromFirestore("orders", "createdAt", "desc")).filter((order: any) => {
+                const createdDate = order.createdAt["seconds"] * 1000;
+                const orderDate = new Date(createdDate);
+                orderDate.setHours(0, 0, 0, 0);
+                
+                return order.shopId === shopId && order.sellerId === session?.user.username && orderDate.getTime() === today.getTime();
+            });
+            if (fetchedOrders) {
+                setOrders(fetchedOrders);
+            }
+        } else {
+            const fetchedOrders = (await fetchDataFromFirestore("orders", "createdAt", "desc")).filter((order: any) => (order.shopId === shopId));
+            if (fetchedOrders) {
+                setOrders(fetchedOrders);
+            }
         }
     };
 

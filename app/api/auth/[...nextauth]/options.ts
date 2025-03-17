@@ -36,6 +36,9 @@ export const options: NextAuthOptions = {
           if (user.shopId) {
             session.user.shopId = user.shopId;
           }
+          if (user.name) {
+            session.user.username = user.name;
+          }
         }
       }
 
