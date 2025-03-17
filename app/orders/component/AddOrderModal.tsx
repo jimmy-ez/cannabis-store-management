@@ -1,8 +1,8 @@
 "use client";
 
-import { IShop, ModalProps } from "@/interface/general.interface";
+import { IShop, IUser, ModalProps } from "@/interface/general.interface";
 import { IOrder, IOrderProduct, IProduct } from "@/interface/product.interface";
-import { addDataToFirestore, fetchDataFromFirestore, updateDataToFirestore } from "@/service/firestoreService";
+import { addDataToFirestore, fetchDataFromFirestore, getUserByEmail } from "@/service/firestoreService";
 import { Button, useDisclosure } from "@heroui/react";
 import { Input } from "@heroui/react"
 import {
@@ -25,10 +25,11 @@ const label = `text-sm font-semibold pb-2 pl-1`;
 
 interface AddOrderModalProps extends ModalProps {
     defaultShopId: string | undefined;
-    selectedProduct?: IProduct;
+    fetchOrders?: (shopId: string) => void;
+    // selectedProduct?: IProduct;
 }
 
-export default function AddOrderModal({ isOpen, onClose, onOpen, selectedProduct, defaultShopId }: AddOrderModalProps) {
+export default function AddOrderModal({ isOpen, onClose, onOpen, defaultShopId, fetchOrders }: AddOrderModalProps) {
     const router = useRouter();
     const { data: session } = useSession();
 
@@ -82,23 +83,23 @@ export default function AddOrderModal({ isOpen, onClose, onOpen, selectedProduct
         return 0;
     }, [orderProduct]);
 
-    useEffect(() => {
-        if (selectedProduct) {
-            setStrainName(selectedProduct.name);
-            setCnbType(selectedProduct.cannabis?.type as "hybrid" | "indica" | "sativa");
-            setThc(selectedProduct.cannabis?.thc ?? 0);
-            setCbd(selectedProduct.cannabis?.cbd ?? 0);
-            setFeeling(selectedProduct.cannabis?.feeling);
-            setTaste(selectedProduct.cannabis?.taste);
-            setPrice(selectedProduct.price);
-            setLocalPrice(selectedProduct.localPrice);
-            setStock(selectedProduct.stock);
-            setCost(selectedProduct.cost);
-            setIsActive(selectedProduct.isActive);
-            setProductId(selectedProduct.id);
-            setIsEdit(true);
-        }
-    }, [selectedProduct]);
+    // useEffect(() => {
+    //     if (selectedProduct) {
+    //         setStrainName(selectedProduct.name);
+    //         setCnbType(selectedProduct.cannabis?.type as "hybrid" | "indica" | "sativa");
+    //         setThc(selectedProduct.cannabis?.thc ?? 0);
+    //         setCbd(selectedProduct.cannabis?.cbd ?? 0);
+    //         setFeeling(selectedProduct.cannabis?.feeling);
+    //         setTaste(selectedProduct.cannabis?.taste);
+    //         setPrice(selectedProduct.price);
+    //         setLocalPrice(selectedProduct.localPrice);
+    //         setStock(selectedProduct.stock);
+    //         setCost(selectedProduct.cost);
+    //         setIsActive(selectedProduct.isActive);
+    //         setProductId(selectedProduct.id);
+    //         setIsEdit(true);
+    //     }
+    // }, [selectedProduct]);
 
     const handleSubmit = async () => {
         setIsLoading(true);
@@ -107,20 +108,25 @@ export default function AddOrderModal({ isOpen, onClose, onOpen, selectedProduct
                 return toast.error("Please fill all required fields");
             }
 
+            const seller = await getUserByEmail(session?.user.email!) as IUser;
+
             const orderData: IOrder = {
                 shopId: shopId,
-                sellerId: session?.user.id!,
+                sellerId: seller.name,
+                customerName: customerName,
                 products: orderProduct,
                 total: orderProduct.reduce((acc, item) => acc + item.total, 0),
                 status: "completed",
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                note: note ?? "-"
             }
 
             const result = await addDataToFirestore("orders", orderData);
             if (result) {
                 toast.success("Order added successfully");
                 handleClose();
+                fetchOrders && fetchOrders(shopId);
                 router.push("/orders");
             } else {
                 toast.error("Failed to add order");
@@ -169,10 +175,6 @@ export default function AddOrderModal({ isOpen, onClose, onOpen, selectedProduct
         const prevData = orderProduct || [];
         setOrderProduct([...prevData, newProduct]);
     };
-
-    useEffect(() => {
-        console.log("orderProduct", orderProduct);
-    }, [orderProduct]);
 
     return (
         <>

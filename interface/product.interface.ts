@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface ICannabis {
   type: "indica" | "sativa" | "hybrid";
   thc: number;
@@ -35,10 +37,11 @@ export interface IOrder {
   id?: string;
   shopId: string;
   sellerId: string;
+  customerName: string;
   products: IOrderProduct[];
   total: number;
   status: "pending" | "completed" | "cancelled";
   note?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | Timestamp;
+  updatedAt: Date | Timestamp;
 }
