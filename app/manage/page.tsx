@@ -45,7 +45,6 @@ export default function ManagePage() {
     }, []);
 
     useEffect(() => {
-        console.log("session", session);
         if (sessionStatus == "authenticated" && session && session.user.role !== "owner") {
             router.push("/");
         }

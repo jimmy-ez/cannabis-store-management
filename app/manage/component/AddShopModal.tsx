@@ -4,7 +4,6 @@ import { IShop, ModalProps } from "@/interface/general.interface";
 import { addDataToFirestore, updateDataToFirestore } from "@/service/firestoreService";
 import { Button } from "@heroui/react"
 import { Input } from "@heroui/react"
-import { IUser } from "@/interface/general.interface";
 import {
     Modal,
     ModalContent,
@@ -16,8 +15,6 @@ import { Switch } from "@heroui/react"
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
 import { useRouter } from "next/navigation";
-import { SearchIcon } from "@/components/icons";
-import { SharedSelection } from "@heroui/react"
 
 const label = `text-sm font-semibold pb-2 pl-1`;
 
@@ -38,7 +35,6 @@ export default function AddShopModal({ isOpen, onClose, onOpen, selectedShop }: 
     const [shopId, setShopId] = useState<string>();
 
     useEffect(() => {
-        console.log("selectedShop", selectedShop);
         if (selectedShop) {
             setShopId(selectedShop.id);
             setName(selectedShop.name);
@@ -76,7 +72,6 @@ export default function AddShopModal({ isOpen, onClose, onOpen, selectedShop }: 
                     toast.error("Failed to update shop");
                 }
             } else {
-                console.log("data", data);
                 delete data.id;
                 const resId = await addDataToFirestore("shops", data);
                 if (resId) {

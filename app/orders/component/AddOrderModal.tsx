@@ -198,7 +198,6 @@ export default function AddOrderModal({ isOpen, onClose, onOpen, defaultShopId, 
                                                     placeholder="Select Shop"
                                                     selectedKeys={shopId ? [shopId] : []}
                                                     onChange={(e) => {
-                                                        console.log(e.target.value);
                                                         setShopId(e.target.value);
                                                     }}
                                                 >

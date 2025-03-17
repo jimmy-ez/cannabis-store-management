@@ -59,7 +59,6 @@ export default function AddUserModal({ isOpen, onClose, onOpen, selectedUser }: 
 
     useEffect(() => {
         if (selectedUser) {
-            console.log("selectedUser", selectedUser);
             setName(selectedUser.name);
             setEmail(selectedUser.email);
             setRole(selectedUser.role);
@@ -174,7 +173,6 @@ export default function AddUserModal({ isOpen, onClose, onOpen, selectedUser }: 
                                             selectedKeys={shopId}
                                             onChange={(e) => {
                                                 const splitValue = e.target.value.split(",");
-                                                console.log("splitValue", splitValue);
                                                 if (splitValue.length > 0) {
                                                     setShopId(splitValue);
                                                 }

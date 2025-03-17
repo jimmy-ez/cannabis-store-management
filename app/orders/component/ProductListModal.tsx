@@ -43,7 +43,6 @@ export default function ProductListModal({ isOpen, onClose, onOpen, shopId, addP
         const fetchedProducts = await fetchDataFromFirestore("products") as IProduct[];
         const filteredProducts = await fetchedProducts.filter((product) => (product.isActive && product.shopId === shopId));
         setProducts(filteredProducts);
-        console.log("filteredProducts", filteredProducts);
     };
 
     useEffect(() => {

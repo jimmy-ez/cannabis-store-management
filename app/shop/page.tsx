@@ -95,7 +95,6 @@ export default function StockPage() {
     if (selectedShop) {
       fetchProducts(selectedShop);
     }
-    console.log("selectedShop", selectedShop);
   }, [selectedShop]);
 
   useEffect(() => {

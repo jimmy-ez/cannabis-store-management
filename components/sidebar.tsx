@@ -10,9 +10,7 @@ export default function Sidebar() {
     const router = useRouter();
     const pathName = usePathname();
 
-    const { data: session } = useSession();
-    console.log("session", session);
-    
+    const { data: session } = useSession();    
 
     const [activeMenu, setActiveMenu] = useState<number>(0);
 
